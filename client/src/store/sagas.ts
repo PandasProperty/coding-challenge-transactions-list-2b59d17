@@ -1,36 +1,26 @@
-import { takeEvery } from "redux-saga/effects";
+import { put, takeEvery } from "redux-saga/effects";
 import {
-  JsonRpcProvider,
   Transaction,
   TransactionResponse,
   TransactionReceipt,
   BrowserProvider,
   Signer,
+  TransactionRequest,
 } from "ethers";
 
 import apolloClient from "../apollo/client";
-import { Actions } from "../types";
 import { SaveTransaction } from "../queries";
+import { Actions, sendTransactionAction, sentTransactionAction, setErrorAction } from './actions';
+import { convertETHtoWEI } from '../utils';
 
-function* sendTransaction() {
-  const provider = new JsonRpcProvider("http://localhost:8545");
-
+function* sendTransaction(action: ReturnType<typeof sendTransactionAction>) {
   const walletProvider = new BrowserProvider(window.web3.currentProvider);
 
   const signer: Signer = yield walletProvider.getSigner();
 
-  const accounts: Array<{ address: string }> = yield provider.listAccounts();
-
-  const randomAddress = () => {
-    const min = 1;
-    const max = 19;
-    const random = Math.round(Math.random() * (max - min) + min);
-    return accounts[random].address;
-  };
-
-  const transaction = {
-    to: randomAddress(),
-    value: 1000000000000000000,
+  const transaction: TransactionRequest = {
+    to: action.payload.recipient,
+    value: convertETHtoWEI(action.payload.amount),
   };
 
   try {
@@ -53,12 +43,15 @@ function* sendTransaction() {
       },
     };
 
+    // I've assume that the transactions are signed and have an hash since the routing is based on the hash
+    yield put(sentTransactionAction({ hash: receipt.hash! }));
+    
     yield apolloClient.mutate({
       mutation: SaveTransaction,
       variables,
     });
-  } catch (error) {
-    //
+  } catch (error: any) {
+    yield put(setErrorAction(error.message))
   }
 }
 
