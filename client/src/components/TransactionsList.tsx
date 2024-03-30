@@ -9,7 +9,7 @@ const TransactionList: React.FC = () => {
   const { loading, error, data } =
     useQuery<TransactionsData>(GetAllTransactions);
 
-
+    
   if (loading) {
     return (
       <div className="flex flex-col mt-20">

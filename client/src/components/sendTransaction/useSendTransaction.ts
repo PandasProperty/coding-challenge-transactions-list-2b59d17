@@ -58,7 +58,7 @@ export default function useSendTransaction() {
 
   useEffect(() => {
     if (transactions.length) {
-      handleNavigate(transactions[transactions.length - 1]);
+      handleNavigate(transactions[transactions.length - 1].hash);
       onCloseModal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

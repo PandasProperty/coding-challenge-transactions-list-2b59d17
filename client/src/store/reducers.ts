@@ -1,11 +1,11 @@
+import { Transaction } from '../types';
 import { clearErrorAction, sentTransactionAction, setErrorAction } from './actions';
 
-// Define the state type - I've stored for the transactions only the hash
-// since from redux I see we are using only that information for navigation
-// also it could have been only one field currentTransactions but I left it array
-// since it was set like this (in case it's a task for the next interview if I pass this one)
+// Define the state type - At first I've stored for the transactions only the hash
+// but then I saved the entire transaction since it occured to me that the next exercise 
+// might be to update the graphql cache data
 export interface RootState {
-  transactions: string[];
+  transactions: Transaction[];
   error: string;
 }
 
@@ -19,7 +19,7 @@ const reducer = (state = initialState, action: any): RootState => {
   if (sentTransactionAction.match(action)) {
     return {
       ...state,
-      transactions: [...state.transactions, action.payload.hash],
+      transactions: [...state.transactions, { ...action.payload }],
     };
   }
   if (setErrorAction.match(action)) {

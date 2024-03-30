@@ -34,17 +34,16 @@ function* sendTransaction(action: ReturnType<typeof sendTransactionAction>) {
       transaction: {
         gasLimit: (receipt.gasLimit && receipt.gasLimit.toString()) || "0",
         gasPrice: (receipt.gasPrice && receipt.gasPrice.toString()) || "0",
-        to: receipt.to,
-        from: receipt.from,
+        to: receipt.to || "",
+        from: receipt.from || "",
         value: (receipt.value && receipt.value.toString()) || "",
-        data: receipt.data || null,
+        data: receipt.data || "",
         chainId: (receipt.chainId && receipt.chainId.toString()) || "123456",
-        hash: receipt.hash,
+        hash: receipt.hash || "",
       },
     };
 
-    // I've assume that the transactions are signed and have an hash since the routing is based on the hash
-    yield put(sentTransactionAction({ hash: receipt.hash! }));
+    yield put(sentTransactionAction(variables.transaction));
     
     yield apolloClient.mutate({
       mutation: SaveTransaction,

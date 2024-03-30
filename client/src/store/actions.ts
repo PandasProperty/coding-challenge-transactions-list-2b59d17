@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { Transaction } from '../types';
 
 export enum Actions {
   SendTransaction = "SEND_TRANSACTION",
@@ -14,9 +15,7 @@ export const sendTransactionAction = createAction<{
   Actions.SendTransaction
 );
 
-export const sentTransactionAction = createAction<{
-  hash: string,
-}>(Actions.SentTransaction);
+export const sentTransactionAction = createAction<Transaction>(Actions.SentTransaction);
 
 export const setErrorAction = createAction<string>(
   Actions.SetError
